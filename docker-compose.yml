@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: mem0-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: mem0
+      POSTGRES_PASSWORD: mem0
+      POSTGRES_DB: mem0
+    volumes:
+      - mem0_pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: individual-memory-api
+    profiles:
+      - api
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: individual-memory
+      MEMORY_USER_ID: mazjieo
+      MEMORY_PROJECT: individual-memory
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      MEMORY_LLM_PROVIDER: ollama
+      MEMORY_LLM_MODEL: qwen3.5:9b
+      MEMORY_LLM_TEMPERATURE: "0.1"
+      MEMORY_EMBEDDER_PROVIDER: ollama
+      MEMORY_EMBEDDER_MODEL: nomic-embed-text
+      MEMORY_EMBEDDING_DIMS: "768"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: mem0
+      POSTGRES_PASSWORD: mem0
+      POSTGRES_DB: mem0
+      MEMORY_COLLECTION: coding_memory
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  mcp:
+    build: .
+    container_name: individual-memory-mcp
+    depends_on:
+      - postgres
+    ports:
+      - "8001:8000"
+    command: ["python", "-m", "individual_memory.mcp_server"]
+    environment:
+      MCP_TRANSPORT: streamable-http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8000"
+      APP_NAME: individual-memory
+      MEMORY_USER_ID: mazjieo
+      MEMORY_PROJECT: individual-memory
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      MEMORY_LLM_PROVIDER: ollama
+      MEMORY_LLM_MODEL: qwen3.5:9b
+      MEMORY_LLM_TEMPERATURE: "0.1"
+      MEMORY_EMBEDDER_PROVIDER: ollama
+      MEMORY_EMBEDDER_MODEL: nomic-embed-text
+      MEMORY_EMBEDDING_DIMS: "768"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: mem0
+      POSTGRES_PASSWORD: mem0
+      POSTGRES_DB: mem0
+      MEMORY_COLLECTION: coding_memory
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  mem0_pgdata:

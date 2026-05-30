@@ -1,0 +1,6 @@
+fastapi==0.125.0
+mcp==1.23.3
+mem0ai==2.0.4
+ollama==0.6.2
+psycopg[binary,pool]==3.3.4
+uvicorn[standard]==0.40.0
