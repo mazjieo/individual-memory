@@ -1,5 +1,7 @@
 # individual-memory
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 Local long-term memory service for AI agents, built on top of mem0.
 
 The default runtime is MCP-first:
