@@ -2,6 +2,7 @@ services:
   postgres:
     image: pgvector/pgvector:pg16
     container_name: mem0-postgres
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
@@ -43,6 +44,7 @@ services:
   mcp:
     build: .
     container_name: individual-memory-mcp
+    restart: unless-stopped
     depends_on:
       - postgres
     ports:
